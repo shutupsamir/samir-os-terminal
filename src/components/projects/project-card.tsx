@@ -2,11 +2,34 @@
 
 import type { ProjectToday } from '@/lib/types'
 
+const PROJECT_APPS: Record<string, string> = {
+  printbliss: 'https://printbliss-platform.vercel.app/dashboard',
+  nucleus: 'https://nucleus-content.vercel.app',
+  samirhamid: 'https://samirhamid.com',
+  'prime-trade': 'https://prime-trade-exchange.vercel.app',
+  'milestone-merch': 'https://milestone-merch.vercel.app',
+  'samir-os-terminal': 'https://samir-os-terminal.vercel.app',
+  spine: 'https://github.com/shutupsamir/agentic-spine',
+}
+
+const PROJECT_REPOS: Record<string, string> = {
+  printbliss: 'https://github.com/shutupsamir/printbliss-platform',
+  nucleus: 'https://github.com/shutupsamir/nucleus',
+  samirhamid: 'https://github.com/shutupsamir/samir-website',
+  'prime-trade': 'https://github.com/shutupsamir/prime-trade-exchange',
+  'milestone-merch': 'https://github.com/shutupsamir/milestone-merch',
+  'samir-os-terminal': 'https://github.com/shutupsamir/samir-os-terminal',
+  spine: 'https://github.com/shutupsamir/agentic-spine',
+}
+
 interface ProjectCardProps {
   project: ProjectToday
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const appUrl = PROJECT_APPS[project.slug]
+  const repoUrl = PROJECT_REPOS[project.slug]
+
   function formatTimeAgo(dateStr?: string) {
     if (!dateStr) return 'Never'
     const date = new Date(dateStr)
@@ -30,8 +53,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
   }
 
   return (
-    <div
-      className="bg-[#111] border border-[#333] rounded-lg p-4 hover:border-[#555] transition-colors"
+    <a
+      href={appUrl || '#'}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block bg-[#111] border border-[#333] rounded-lg p-4 hover:border-[#555] transition-colors cursor-pointer"
       style={{ borderLeftColor: project.color, borderLeftWidth: '3px' }}
     >
       <div className="flex items-center justify-between mb-3">
@@ -39,9 +65,26 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <span className="text-xl">{project.icon}</span>
           <span className="font-medium text-white">{project.name}</span>
         </div>
-        <span className="text-xs text-gray-600">
-          {formatTimeAgo(project.last_session_at)}
-        </span>
+        <div className="flex items-center gap-2">
+          {repoUrl && (
+            <span
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                window.open(repoUrl, '_blank')
+              }}
+              className="text-gray-600 hover:text-white transition-colors cursor-pointer"
+              title="Open GitHub repo"
+            >
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+            </span>
+          )}
+          <span className="text-xs text-gray-600">
+            {formatTimeAgo(project.last_session_at)}
+          </span>
+        </div>
       </div>
 
       <div className="mb-3">
@@ -65,6 +108,6 @@ export function ProjectCard({ project }: ProjectCardProps) {
           &ldquo;{project.last_session_summary}&rdquo;
         </div>
       )}
-    </div>
+    </a>
   )
 }
