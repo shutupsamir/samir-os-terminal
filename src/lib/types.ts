@@ -93,6 +93,30 @@ export interface InboxItem {
   }
 }
 
+export interface Task {
+  id: string
+  title: string
+  description?: string
+  status: 'pending' | 'in_progress' | 'completed' | 'blocked' | 'cancelled'
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  due_date?: string
+  scheduled_date?: string
+  completed_at?: string
+  assigned_to?: string
+  tags?: string[]
+  context?: Record<string, unknown>
+  source?: string
+  parent_id?: string
+  created_at: string
+  updated_at: string
+  project?: {
+    slug: string
+    name: string
+    icon: string
+    color: string
+  }
+}
+
 export interface Receipt {
   id: string
   spine_run_id: string

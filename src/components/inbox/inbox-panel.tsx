@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { InboxItem } from '@/lib/types'
-import { captureInbox, processInboxItem } from '@/lib/api'
+import { captureInbox, processInboxItem, convertInboxToTask } from '@/lib/api'
 
 interface InboxPanelProps {
   items: InboxItem[]
@@ -12,6 +12,8 @@ interface InboxPanelProps {
 export function InboxPanel({ items, onRefresh }: InboxPanelProps) {
   const [input, setInput] = useState('')
   const [processing, setProcessing] = useState<string | null>(null)
+  const [converting, setConverting] = useState<string | null>(null)
+  const [taskTitle, setTaskTitle] = useState('')
 
   async function capture() {
     if (!input.trim()) return
@@ -112,6 +114,17 @@ export function InboxPanel({ items, onRefresh }: InboxPanelProps) {
                       done
                     </button>
                     <button
+                      onClick={() => {
+                        setConverting(item.id)
+                        setTaskTitle(item.content)
+                      }}
+                      disabled={processing === item.id}
+                      className="p-1 text-blue-400 hover:bg-blue-900/30 rounded text-xs"
+                      title="Convert to task"
+                    >
+                      task
+                    </button>
+                    <button
                       onClick={() => handleProcess(item.id, 'archive')}
                       disabled={processing === item.id}
                       className="p-1 text-gray-500 hover:bg-gray-700/30 rounded text-xs"
@@ -121,6 +134,42 @@ export function InboxPanel({ items, onRefresh }: InboxPanelProps) {
                     </button>
                   </div>
                 </div>
+                {converting === item.id && (
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      type="text"
+                      value={taskTitle}
+                      onChange={e => setTaskTitle(e.target.value)}
+                      onKeyDown={async e => {
+                        if (e.key === 'Enter' && taskTitle.trim()) {
+                          await convertInboxToTask(item.id, taskTitle.trim())
+                          setConverting(null)
+                          setTaskTitle('')
+                          onRefresh()
+                        }
+                        if (e.key === 'Escape') {
+                          setConverting(null)
+                          setTaskTitle('')
+                        }
+                      }}
+                      className="flex-1 bg-[#1a1a1a] border border-[#444] rounded px-2 py-1 text-xs text-gray-300 outline-none focus:border-blue-500"
+                      placeholder="Task title..."
+                      autoFocus
+                    />
+                    <button
+                      onClick={async () => {
+                        if (!taskTitle.trim()) return
+                        await convertInboxToTask(item.id, taskTitle.trim())
+                        setConverting(null)
+                        setTaskTitle('')
+                        onRefresh()
+                      }}
+                      className="px-2 py-1 bg-blue-900/50 text-blue-400 text-xs rounded hover:bg-blue-900/70"
+                    >
+                      +task
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

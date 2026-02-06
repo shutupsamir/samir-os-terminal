@@ -1,4 +1,4 @@
-import type { DashboardData, Session, Receipt, InboxItem } from './types'
+import type { DashboardData, Session, Receipt, InboxItem, Task } from './types'
 
 const API_BASE = '/api/proxy'
 
@@ -65,5 +65,43 @@ export async function processInboxItem(inboxId: string, action: 'archive' | 'don
   return apiFetch('/api/os/inbox', {
     method: 'PATCH',
     body: JSON.stringify({ inbox_id: inboxId, action }),
+  })
+}
+
+// Task helpers
+export async function getProjectTasks(projectSlug: string): Promise<Task[]> {
+  const result = await apiFetch<{ tasks: Task[] }>(`/api/os/tasks?project=${projectSlug}`)
+  return result.tasks
+}
+
+export async function getAllTasks(): Promise<Task[]> {
+  const result = await apiFetch<{ tasks: Task[] }>('/api/os/tasks')
+  return result.tasks
+}
+
+export async function createTask(title: string, projectSlug?: string, priority?: string): Promise<Task> {
+  const result = await apiFetch<{ task: Task }>('/api/os/tasks', {
+    method: 'POST',
+    body: JSON.stringify({ title, project_slug: projectSlug, priority: priority || 'medium' }),
+  })
+  return result.task
+}
+
+export async function updateTask(taskId: string, updates: Partial<Pick<Task, 'status' | 'priority' | 'assigned_to' | 'title' | 'description'>>): Promise<Task> {
+  const result = await apiFetch<{ task: Task }>('/api/os/tasks', {
+    method: 'PATCH',
+    body: JSON.stringify({ task_id: taskId, ...updates }),
+  })
+  return result.task
+}
+
+export async function convertInboxToTask(inboxId: string, title: string, priority?: string) {
+  return apiFetch('/api/os/inbox', {
+    method: 'PATCH',
+    body: JSON.stringify({
+      inbox_id: inboxId,
+      action: 'convert_to_task',
+      task_data: { title, priority: priority || 'medium' }
+    }),
   })
 }

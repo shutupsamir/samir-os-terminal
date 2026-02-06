@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { ProjectToday } from '@/lib/types'
 import { SessionHistory } from './session-history'
+import { TaskList } from './task-list'
 
 const PROJECT_APPS: Record<string, string> = {
   printbliss: 'https://printbliss-platform.vercel.app/dashboard',
@@ -30,6 +31,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   const [sessionsOpen, setSessionsOpen] = useState(false)
+  const [tasksOpen, setTasksOpen] = useState(false)
   const appUrl = PROJECT_APPS[project.slug]
   const repoUrl = PROJECT_REPOS[project.slug]
 
@@ -133,6 +135,22 @@ export function ProjectCard({ project }: ProjectCardProps) {
       </button>
 
       <SessionHistory slug={project.slug} isOpen={sessionsOpen} />
+
+      {/* Tasks toggle */}
+      <button
+        onClick={() => setTasksOpen(!tasksOpen)}
+        className="w-full flex items-center gap-1 pt-2 text-xs text-gray-600 hover:text-gray-400 transition-colors"
+      >
+        <span className="transition-transform" style={{ transform: tasksOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+          &#9656;
+        </span>
+        Tasks
+        {(project.pending_tasks + project.active_tasks) > 0 && (
+          <span className="ml-auto text-gray-700">{project.pending_tasks + project.active_tasks}</span>
+        )}
+      </button>
+
+      <TaskList slug={project.slug} isOpen={tasksOpen} />
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useDashboard } from '@/lib/hooks/use-dashboard'
-import { logActivity, captureInbox, logTime } from '@/lib/api'
+import { logActivity, captureInbox, logTime, createTask } from '@/lib/api'
 import { ProjectCard } from '@/components/projects/project-card'
 import { ActivityFeed } from '@/components/feed/activity-feed'
 import { ContributionHeatmap } from '@/components/heatmap/contribution-heatmap'
@@ -10,11 +10,12 @@ import { CommandInput } from '@/components/input/command-input'
 import { StatsBar } from '@/components/stats/stats-bar'
 import { InboxPanel } from '@/components/inbox/inbox-panel'
 import { SessionsPanel } from '@/components/sessions/sessions-panel'
+import { TasksPanel } from '@/components/tasks/tasks-panel'
 import type { DashboardData } from '@/lib/types'
 
 export default function Terminal() {
   const { data, isLoading, mutate } = useDashboard()
-  const [activePanel, setActivePanel] = useState<'feed' | 'inbox' | 'sessions'>('feed')
+  const [activePanel, setActivePanel] = useState<'feed' | 'inbox' | 'sessions' | 'tasks'>('feed')
   const [commandHistory, setCommandHistory] = useState<string[]>([])
   const outputRef = useRef<HTMLDivElement>(null)
 
@@ -91,6 +92,22 @@ export default function Terminal() {
         setCommandHistory(prev => [...prev, 'Showing sessions panel'])
         break
 
+      case 'tasks':
+        setActivePanel('tasks')
+        setCommandHistory(prev => [...prev, 'Showing tasks panel'])
+        break
+
+      case 'task':
+        if (args.length > 0) {
+          const title = parts.slice(1).join(' ')
+          await createTask(title)
+          setCommandHistory(prev => [...prev, `Task created: ${title}`])
+          mutate()
+        } else {
+          setCommandHistory(prev => [...prev, 'Usage: task <title>'])
+        }
+        break
+
       case 'clear':
         setCommandHistory([])
         break
@@ -106,6 +123,8 @@ export default function Terminal() {
           '  inbox         Show inbox panel',
           '  log <msg>     Log an activity',
           '  capture <msg> Quick capture to inbox',
+          '  task <title>  Create a new task',
+          '  tasks         Show tasks panel',
           '  track <msg>   Log time entry (auto-categorizes)',
           '  t <msg>       Shortcut for track',
           '  clear         Clear terminal output',
@@ -302,7 +321,7 @@ export default function Terminal() {
           <div className="col-span-4 space-y-4">
             {/* Panel Tabs */}
             <div className="flex gap-2">
-              {(['feed', 'inbox', 'sessions'] as const).map(panel => (
+              {(['feed', 'inbox', 'sessions', 'tasks'] as const).map(panel => (
                 <button
                   key={panel}
                   onClick={() => setActivePanel(panel)}
@@ -327,6 +346,7 @@ export default function Terminal() {
               {activePanel === 'sessions' && (
                 <SessionsPanel sessions={data?.recentSessions || []} />
               )}
+              {activePanel === 'tasks' && <TasksPanel />}
             </div>
           </div>
         </div>
