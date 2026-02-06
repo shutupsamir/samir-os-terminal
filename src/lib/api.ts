@@ -25,6 +25,11 @@ export async function getSessions(limit = 20): Promise<Session[]> {
   return result.sessions
 }
 
+export async function getProjectSessions(projectSlug: string, limit = 10): Promise<Session[]> {
+  const result = await apiFetch<{ sessions: Session[] }>(`/api/os/sessions?project=${projectSlug}&limit=${limit}`)
+  return result.sessions
+}
+
 export async function getReceipts(limit = 20): Promise<Receipt[]> {
   return apiFetch<Receipt[]>(`/api/os/receipts?limit=${limit}`)
 }

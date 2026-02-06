@@ -68,6 +68,10 @@ export interface Session {
   summary?: string
   accomplishments?: string[]
   next_steps?: string[]
+  context?: {
+    agent_name?: string
+    [key: string]: unknown
+  }
   project?: {
     slug: string
     name: string

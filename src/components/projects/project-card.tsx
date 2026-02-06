@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import type { ProjectToday } from '@/lib/types'
+import { SessionHistory } from './session-history'
 
 const PROJECT_APPS: Record<string, string> = {
   printbliss: 'https://printbliss-platform.vercel.app/dashboard',
@@ -27,6 +29,7 @@ interface ProjectCardProps {
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
+  const [sessionsOpen, setSessionsOpen] = useState(false)
   const appUrl = PROJECT_APPS[project.slug]
   const repoUrl = PROJECT_REPOS[project.slug]
 
@@ -117,6 +120,19 @@ export function ProjectCard({ project }: ProjectCardProps) {
           </a>
         )}
       </div>
+
+      {/* Sessions toggle */}
+      <button
+        onClick={() => setSessionsOpen(!sessionsOpen)}
+        className="w-full flex items-center gap-1 pt-2 mt-2 text-xs text-gray-600 hover:text-gray-400 transition-colors"
+      >
+        <span className="transition-transform" style={{ transform: sessionsOpen ? 'rotate(90deg)' : 'rotate(0deg)' }}>
+          &#9656;
+        </span>
+        Sessions
+      </button>
+
+      <SessionHistory slug={project.slug} isOpen={sessionsOpen} />
     </div>
   )
 }

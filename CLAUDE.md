@@ -28,28 +28,16 @@ All data flows through the proxy route to avoid CORS. The proxy forwards to the 
 | `src/app/api/proxy/[...path]/route.ts` | CORS proxy to PrintBliss |
 | `public/manifest.json` | PWA manifest |
 
-## Agentic Spine Governance
+## Spine Governance
 
-**Project slug:** `samir-os-terminal`
-**Spine repo:** `~/Dropbox/DIGITALAPPARELPRINTING/GITHUB/agentic-spine`
+**Slug:** `samir-os-terminal` | **Spine:** `~/Dropbox/DIGITALAPPARELPRINTING/GITHUB/agentic-spine`
 
-### Session Lifecycle
+Session lifecycle and brain updates are enforced globally (~/.claude/CLAUDE.md).
+The spine CLI auto-resolves this project from CWD.
 
+Query past work:
 ```bash
-cd ~/Dropbox/DIGITALAPPARELPRINTING/GITHUB/agentic-spine
-./bin/cli/bin/spine session start --project samir-os-terminal
-./bin/cli/bin/spine session status
-./bin/cli/bin/spine session end --summary "..."
-```
-
-### Receipt Flow
-
-All work tracked via spine. File receipts are canonical. Supabase is a queryable mirror.
-
-### Query CLI
-
-```bash
-./ops/track/os-query.sh feed --project samir-os-terminal --limit 10
-./ops/track/os-query.sh receipts --project samir-os-terminal
-./ops/track/os-query.sh sessions
+$SPINE_REPO/ops/track/os-query.sh sessions --project samir-os-terminal
+$SPINE_REPO/ops/track/os-query.sh receipts --project samir-os-terminal
+$SPINE_REPO/ops/track/os-query.sh feed --project samir-os-terminal --limit 10
 ```
