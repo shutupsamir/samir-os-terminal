@@ -30,14 +30,11 @@ All data flows through the proxy route to avoid CORS. The proxy forwards to the 
 
 ## Spine Governance
 
-**Slug:** `samir-os-terminal` | **Spine:** `~/Dropbox/DIGITALAPPARELPRINTING/GITHUB/agentic-spine`
+This project is governed by the [Agentic Spine](../../CLAUDE.md). Sessions are managed by Hammerspoon (auto-start/end).
 
-Session lifecycle and brain updates are enforced globally (~/.claude/CLAUDE.md).
-The spine CLI auto-resolves this project from CWD.
-
-Query past work:
+Query CLI:
 ```bash
 $SPINE_REPO/ops/track/os-query.sh sessions --project samir-os-terminal
 $SPINE_REPO/ops/track/os-query.sh receipts --project samir-os-terminal
-$SPINE_REPO/ops/track/os-query.sh feed --project samir-os-terminal --limit 10
+$SPINE_REPO/ops/track/os-query.sh feed --project samir-os-terminal
 ```
